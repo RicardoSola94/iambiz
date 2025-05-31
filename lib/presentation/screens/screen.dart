@@ -1,0 +1,11 @@
+export 'home/home_screen.dart';
+export 'inventory/add_inventory_screen.dart';
+export 'clientes/clientes_screen.dart';
+export 'bottom_navigation/bottom_navigation.dart';
+export 'onboarding/onboarding_screen.dart';
+export 'onboarding/login_screen.dart';
+export 'onboarding/create_account_screen.dart';
+export 'widgets/social_button.dart';
+export 'widgets/custom_button.dart';
+export 'widgets/custom_textfield.dart';
+export 'clientes/add_cliente_screen.dart';
