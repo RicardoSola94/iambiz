@@ -165,11 +165,11 @@ class InventoryDetailsScreen extends ConsumerWidget {
                                     icon: FontAwesomeIcons.penToSquare,
                                     isLarge: true,
                                     onPressed: () {
-                                      // context.push(
-                                      //   '/edit-cliente',
-                                      //   extra: cliente,
-                                      // );
-                                      // ref.invalidate(clientesProvider);
+                                      context.push(
+                                        '/edit-inventory',
+                                        extra: inventory,
+                                      );
+                                      ref.invalidate(inventoryProvider);
                                     },
                                   ),
 
