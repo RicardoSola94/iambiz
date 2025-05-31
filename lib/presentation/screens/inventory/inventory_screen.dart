@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iambiz/config/theme/default_theme.dart';
 import 'package:iambiz/presentation/screens/inventory/inventory_loading_shimmer.dart';
-import 'package:iambiz/presentation/screens/widgets/custom_shimmer_tile.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../../config/colors.dart';
 import '../../providers/inventory/inventory_providers.dart';
@@ -68,13 +66,18 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                             itemCount: filteredItems.length,
                             itemBuilder: (context, index) {
                               final item = filteredItems[index];
-                              return InventoryItemWidget(
-                                name: item.name,
-                                quantity: item.quantity,
-                                unit: item.unit,
-                                minQuantity: item.minQuantity,
-                                category: item.category,
-                                purchasePrice: item.purchasePrice,
+                              return GestureDetector(
+                                onTap: () {
+                                  context.push('/detail-inventory/${item.id}');
+                                },
+                                child: InventoryItemWidget(
+                                  name: item.name,
+                                  quantity: item.quantity,
+                                  unit: item.unit,
+                                  minQuantity: item.minQuantity,
+                                  category: item.category,
+                                  purchasePrice: item.purchasePrice,
+                                ),
                               );
                             },
                           ),

@@ -5,6 +5,7 @@ import 'package:iambiz/presentation/screens/calendar/calendar_task.dart';
 import 'package:iambiz/presentation/screens/clientes/details_cliente_screen.dart';
 import 'package:iambiz/presentation/screens/clientes/edit_cliente_screen.dart';
 import 'package:iambiz/presentation/screens/estadisticas/estadisticas_screen.dart';
+import 'package:iambiz/presentation/screens/inventory/details_inventory_screen.dart';
 import 'package:iambiz/presentation/screens/inventory/inventory_screen.dart';
 import 'package:iambiz/presentation/screens/quote/add/add_cliente_quote_screen.dart';
 import 'package:iambiz/presentation/screens/quote/add/add_producto_quote_screen.dart';
@@ -107,6 +108,13 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/add-inventory',
         builder: (context, state) => const AddInventoryScreen(),
+      ),
+      GoRoute(
+        path: '/detail-inventory/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return InventoryDetailsScreen(id: id);
+        },
       ),
       GoRoute(
         path: '/quote-cliente',
