@@ -32,10 +32,22 @@ class _QuoteSelectItemsScreenState
     final serviciosAsync = ref.watch(servicesProvider);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Cotización',
+          style: IAmBizTheme.h1TextStyle.copyWith(), // o el color que necesites
+        ),
+        leading: IconButton(
+          onPressed: () {
+            context.go('/home');
+          },
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 26),
+        ),
+      ),
       body: Stack(
         children: [
-          _buildBackground(),
-
           SafeArea(
             child: serviciosAsync.when(
               loading: () => ClienteSelectShimmer(),
@@ -113,37 +125,6 @@ class _QuoteSelectItemsScreenState
     );
   }
 
-  Widget _buildBackground() {
-    return Stack(
-      children: [
-        Positioned(
-          top: -330,
-          right: -330,
-          child: Container(
-            height: 600,
-            width: 600,
-            decoration: BoxDecoration(
-              color: AppColors.lightprimaryColor,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
-        Positioned(
-          top: -125,
-          right: -125,
-          child: Container(
-            height: 450,
-            width: 450,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.lightprimaryColor, width: 2),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildMainContent(BuildContext context, List<ServiceModel> service) {
     final filtered =
         service
@@ -153,54 +134,7 @@ class _QuoteSelectItemsScreenState
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10.0,
-              // vertical: 12.0,
-            ),
-            child: SizedBox(
-              height: 50,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Texto centrado en pantalla
-                  Center(
-                    child: Text("Cotización", style: IAmBizTheme.h1TextStyle),
-                  ),
-
-                  // Flecha atrás en la esquina izquierda
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () => context.go('/home'),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(
-                                0.15,
-                              ), // Sombra suave
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(8),
-                        child: const Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          size: 26,
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           Text('Seleccionar Servicios', style: IAmBizTheme.h2TextStyle),
           const SizedBox(height: 16),
 
@@ -232,19 +166,24 @@ class _QuoteSelectItemsScreenState
             ),
           ),
           ElevatedButton.icon(
-            onPressed: () {
-              final servicios =
-                  ref
-                      .read(servicesProvider)
-                      .value
-                      ?.where((s) => selectedServiceIds.contains(s.id))
-                      .toList() ??
-                  [];
+            onPressed:
+                selectedServiceIds.isEmpty
+                    ? null
+                    : () {
+                      final servicios =
+                          ref
+                              .read(servicesProvider)
+                              .value
+                              ?.where((s) => selectedServiceIds.contains(s.id))
+                              .toList() ??
+                          [];
 
-              ref.read(quotationDraftProvider.notifier).addServices(servicios);
+                      ref
+                          .read(quotationDraftProvider.notifier)
+                          .addServices(servicios);
+                      context.push('/quote-summary');
+                    },
 
-              context.push('/quote-summary');
-            },
             label: const Text(
               "Continuar",
               style: TextStyle(color: Colors.white),

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iambiz/config/theme/default_theme.dart';
 import 'package:iambiz/presentation/screens/widgets/custom_dropdown.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -148,6 +149,20 @@ class _AddInventoryItemScreenState
     ];
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Nuevo Producto',
+          style: IAmBizTheme.h1TextStyle.copyWith(), // o el color que necesites
+        ),
+        leading: IconButton(
+          onPressed: () {
+            context.go('/quote-products');
+          },
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 26),
+        ),
+      ),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -155,33 +170,6 @@ class _AddInventoryItemScreenState
               children: [
                 Stack(
                   children: [
-                    Positioned(
-                      top: -330,
-                      right: -330,
-                      child: Container(
-                        height: 600,
-                        width: 600,
-                        decoration: BoxDecoration(
-                          color: AppColors.lightprimaryColor,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: -((1 / 4) * 500),
-                      right: -((1 / 4) * 500),
-                      child: Container(
-                        height: 450,
-                        width: 450,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.lightprimaryColor,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 22,
@@ -189,63 +177,7 @@ class _AddInventoryItemScreenState
                       ),
                       child: Column(
                         children: [
-                          const SizedBox(height: 40),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0,
-                              // vertical: 12.0,
-                            ),
-                            child: SizedBox(
-                              height: 50,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  // Texto centrado en pantalla
-                                  const Center(
-                                    child: Text(
-                                      "Nuevo Producto",
-                                      style: TextStyle(
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    ),
-                                  ),
-
-                                  // Flecha atrás en la esquina izquierda
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: GestureDetector(
-                                      onTap:
-                                          () => context.go('/quote-products'),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(
-                                                0.15,
-                                              ), // Sombra suave
-                                              blurRadius: 6,
-                                              offset: const Offset(0, 3),
-                                            ),
-                                          ],
-                                        ),
-                                        padding: const EdgeInsets.all(8),
-                                        child: const Icon(
-                                          Icons.arrow_back_ios_new_rounded,
-                                          size: 26,
-                                          color: AppColors.primaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 140),
+                          const SizedBox(height: 20),
                           CustomTextfield(
                             label: "Nombre del producto",
                             hint: "Nombre",
@@ -352,12 +284,6 @@ class _AddInventoryItemScreenState
                           ),
 
                           const SizedBox(height: 50),
-                          CustomButton(
-                            text: 'Guardar',
-                            icon: FontAwesomeIcons.floppyDisk,
-                            isLarge: true,
-                            onPressed: _saveItem,
-                          ),
                         ],
                       ),
                     ),
@@ -377,6 +303,15 @@ class _AddInventoryItemScreenState
               ),
             ),
         ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.all(30),
+        child: CustomButton(
+          text: 'Guardar',
+          icon: FontAwesomeIcons.floppyDisk,
+          isLarge: true,
+          onPressed: _saveItem,
+        ),
       ),
     );
   }

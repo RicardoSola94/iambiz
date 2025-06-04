@@ -12,7 +12,7 @@ class Inventory extends _$Inventory {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) throw Exception('Usuario no autenticado');
 
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
 
     final snapshot =
         await FirebaseFirestore.instance

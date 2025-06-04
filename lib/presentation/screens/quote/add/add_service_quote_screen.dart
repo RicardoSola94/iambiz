@@ -7,6 +7,7 @@ import 'package:iambiz/domain/entities/services/service_model.dart';
 import 'package:iambiz/presentation/providers/services_providers/service_providers.dart';
 
 import '../../../../config/colors.dart';
+import '../../../../config/config.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_textfield.dart';
 
@@ -80,128 +81,61 @@ class _AddServiceQuoteScreenState extends ConsumerState<AddServiceQuoteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Fondo decorativo
-          Positioned(
-            top: -330,
-            right: -330,
-            child: Container(
-              height: 600,
-              width: 600,
-              decoration: BoxDecoration(
-                color: AppColors.lightprimaryColor,
-                shape: BoxShape.circle,
-              ),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Nuevo Servicio',
+          style: IAmBizTheme.h1TextStyle.copyWith(), // o el color que necesites
+        ),
+        leading: IconButton(
+          onPressed: () {
+            context.go('/quote-service');
+          },
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 26),
+        ),
+      ),
+      body:
+      // Contenido
+      SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 15),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            CustomTextfield(
+              label: "Nombre del servicio",
+              hint: "Nombre",
+              controller: nameController,
+              // errorText: nameError,
             ),
-          ),
-          Positioned(
-            top: -((1 / 4) * 500),
-            right: -((1 / 4) * 500),
-            child: Container(
-              height: 450,
-              width: 450,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.lightprimaryColor,
-                  width: 2,
-                ),
-              ),
+            const SizedBox(height: 20),
+            CustomTextfield(
+              label: "Descripción del servicio",
+              hint: "Descripción",
+              controller: descripcionController,
             ),
-          ),
-
-          // Contenido
-          SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 15),
-            child: Column(
-              children: [
-                const SizedBox(height: 60),
-
-                // Título y botón atrás
-                SizedBox(
-                  height: 50,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      const Center(
-                        child: Text(
-                          "Nuevo Servicio",
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: GestureDetector(
-                          onTap: () => context.go('/quote-services'),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.15),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            padding: const EdgeInsets.all(8),
-                            child: const Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              size: 26,
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 140),
-                CustomTextfield(
-                  label: "Nombre del servicio",
-                  hint: "Nombre",
-                  controller: nameController,
-                  // errorText: nameError,
-                ),
-                const SizedBox(height: 20),
-                CustomTextfield(
-                  label: "Descripción del servicio",
-                  hint: "Descripción",
-                  controller: descripcionController,
-                ),
-                const SizedBox(height: 20),
-                CustomTextfield(
-                  label: "Precio",
-                  hint: "Ej: 20.00",
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'^\d+\.?\d{0,2}'),
-                    ),
-                  ],
-                  controller: precioController,
-                ),
-                const SizedBox(height: 20),
-
-                // Switch para servicio
-                const SizedBox(height: 40),
-                CustomButton(
-                  text: "Guardar",
-                  icon: FontAwesomeIcons.floppyDisk,
-                  isLarge: true,
-                  onPressed: _saveItem,
-                ),
+            const SizedBox(height: 20),
+            CustomTextfield(
+              label: "Precio",
+              hint: "Ej: 20.00",
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
               ],
+              controller: precioController,
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.all(30),
+        child: CustomButton(
+          text: "Guardar",
+          icon: FontAwesomeIcons.floppyDisk,
+          isLarge: true,
+          onPressed: _saveItem,
+        ),
       ),
     );
   }

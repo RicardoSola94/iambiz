@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iambiz/config/theme/default_theme.dart';
+import 'package:iambiz/domain/entities/inventory/inventory_model.dart';
 import 'package:iambiz/presentation/screens/inventory/inventory_loading_shimmer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 import '../../../config/colors.dart';
 import '../../providers/inventory/inventory_providers.dart';
@@ -18,12 +21,144 @@ class InventoryScreen extends ConsumerStatefulWidget {
 class _InventoryScreenState extends ConsumerState<InventoryScreen> {
   String searchQuery = '';
 
+  final GlobalKey fabInventoryKey = GlobalKey();
+  final GlobalKey searchFieldInventoryKey = GlobalKey();
+  final GlobalKey firstItemInventoryKey = GlobalKey();
+
+  List<TargetFocus> targets = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final seen = await hasShownTutorial();
+      if (!seen) {
+        final inventoryItems = ref
+            .read(inventoryProvider)
+            .maybeWhen(data: (items) => items, orElse: () => []);
+
+        initTargets(hasItems: inventoryItems.isNotEmpty);
+        showTutorial();
+        await markTutorialAsShown();
+      }
+    });
+  }
+
+  void showTutorial() {
+    if (!mounted) return;
+
+    if (targets.any((t) => t.keyTarget?.currentContext == null)) {
+      Future.delayed(const Duration(milliseconds: 300), showTutorial);
+      return;
+    }
+
+    TutorialCoachMark(
+      targets: targets,
+      colorShadow: Colors.black,
+      textSkip: "SALTAR",
+      paddingFocus: 10,
+      onFinish: () {
+        print("Tutorial terminado");
+      },
+      onClickTarget: (target) {
+        print('Pulsado ${target.identify}');
+      },
+    ).show(context: context);
+  }
+
+  void initTargets({required bool hasItems}) {
+    targets = [
+      TargetFocus(
+        identify: "Filter",
+        keyTarget: searchFieldInventoryKey,
+        radius: 10,
+        shape: ShapeLightFocus.RRect,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            child: const Text(
+              "Usa este campo para buscar productos por nombre.",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ),
+        ],
+      ),
+      if (hasItems)
+        TargetFocus(
+          identify: "FirstItem",
+          keyTarget: firstItemInventoryKey,
+          radius: 10,
+          shape: ShapeLightFocus.RRect,
+          contents: [
+            TargetContent(
+              align: ContentAlign.top,
+              child: const Text(
+                "Toca aquí para ver los detalles del producto.",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+            ),
+          ],
+        )
+      else
+        TargetFocus(
+          identify: "EmptyState",
+          keyTarget: firstItemInventoryKey,
+          radius: 10,
+          shape: ShapeLightFocus.RRect,
+          contents: [
+            TargetContent(
+              align: ContentAlign.top,
+              child: const Text(
+                "Aquí aparecerán los productos una vez agregues alguno.",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+            ),
+          ],
+        ),
+      TargetFocus(
+        identify: "AddButton",
+        keyTarget: fabInventoryKey,
+        shape: ShapeLightFocus.Circle,
+        radius: 10,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            child: const Text(
+              "Toca aquí para agregar un nuevo producto al inventario.",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  Future<bool> hasShownTutorial() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('Inventory_tutorial_shown') ?? false;
+  }
+
+  Future<void> markTutorialAsShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('Inventory_tutorial_shown', true);
+  }
+
   @override
   Widget build(BuildContext context) {
     final inventoryAsync = ref.watch(inventoryProvider);
 
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text(
+            'Mi Inventario',
+            style:
+                IAmBizTheme.h1TextStyle.copyWith(), // o el color que necesites
+          ),
+        ),
         body: inventoryAsync.when(
           data: (items) {
             final filteredItems =
@@ -35,12 +170,11 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
 
             return Column(
               children: [
-                //const SizedBox(height: 10),
-                Text('Mi Inventario', style: IAmBizTheme.h1TextStyle),
-                const SizedBox(height: 20),
+                SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: TextField(
+                    key: searchFieldInventoryKey,
                     onChanged: (value) {
                       setState(() {
                         searchQuery = value.toLowerCase();
@@ -59,7 +193,8 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                 Expanded(
                   child:
                       filteredItems.isEmpty
-                          ? const Center(
+                          ? Center(
+                            key: firstItemInventoryKey,
                             child: Text('No se encontraron productos.'),
                           )
                           : ListView.builder(
@@ -71,6 +206,8 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                                   context.push('/detail-inventory/${item.id}');
                                 },
                                 child: InventoryItemWidget(
+                                  key:
+                                      index == 0 ? firstItemInventoryKey : null,
                                   name: item.name,
                                   quantity: item.quantity,
                                   unit: item.unit,
@@ -92,6 +229,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
         floatingActionButton: Padding(
           padding: const EdgeInsets.only(bottom: 90),
           child: FloatingActionButton.extended(
+            key: fabInventoryKey,
             heroTag: 'fab_nuevo_inventory',
             label: const Text(
               'Nuevo Inventario',
@@ -190,7 +328,6 @@ class InventoryItemWidget extends StatelessWidget {
 
                 SizedBox(height: 6),
 
-                // Segunda línea: categoría
                 Text(
                   category,
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
@@ -198,7 +335,6 @@ class InventoryItemWidget extends StatelessWidget {
 
                 SizedBox(height: 6),
 
-                // Tercera línea: precio de compra
                 Text(
                   'Precio compra: \$${purchasePrice.toStringAsFixed(2)}',
                   style: TextStyle(

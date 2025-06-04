@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iambiz/config/colors.dart';
 import 'package:iambiz/presentation/providers/inventory/inventory_providers.dart';
+import '../../../config/config.dart';
 import '../widgets/custom_button.dart';
 
 class InventoryDetailsScreen extends ConsumerWidget {
@@ -27,6 +28,20 @@ class InventoryDetailsScreen extends ConsumerWidget {
         );
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Detalles',
+          style: IAmBizTheme.h1TextStyle.copyWith(), // o el color que necesites
+        ),
+        leading: IconButton(
+          onPressed: () {
+            context.pop();
+          },
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 26),
+        ),
+      ),
       body:
           inventory == null
               ? const Center(child: CircularProgressIndicator())
@@ -37,34 +52,6 @@ class InventoryDetailsScreen extends ConsumerWidget {
                       children: [
                         Stack(
                           children: [
-                            // Fondo decorativo
-                            Positioned(
-                              top: -330,
-                              right: -330,
-                              child: Container(
-                                height: 600,
-                                width: 600,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.lightprimaryColor,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: -125,
-                              right: -125,
-                              child: Container(
-                                height: 450,
-                                width: 450,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: AppColors.lightprimaryColor,
-                                    width: 2,
-                                  ),
-                                ),
-                              ),
-                            ),
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 22,
@@ -72,54 +59,7 @@ class InventoryDetailsScreen extends ConsumerWidget {
                               ),
                               child: Column(
                                 children: [
-                                  const SizedBox(height: 60),
-                                  // Encabezado
-                                  SizedBox(
-                                    height: 50,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        const Center(
-                                          child: Text(
-                                            "Detalles",
-                                            style: TextStyle(
-                                              fontSize: 26,
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColors.primaryColor,
-                                            ),
-                                          ),
-                                        ),
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: GestureDetector(
-                                            onTap: () => context.pop(),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                shape: BoxShape.circle,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withOpacity(0.15),
-                                                    blurRadius: 6,
-                                                    offset: const Offset(0, 3),
-                                                  ),
-                                                ],
-                                              ),
-                                              padding: const EdgeInsets.all(8),
-                                              child: const Icon(
-                                                Icons
-                                                    .arrow_back_ios_new_rounded,
-                                                size: 26,
-                                                color: AppColors.primaryColor,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 30),
+                                  const SizedBox(height: 20),
 
                                   // Datos del cliente
                                   _InfoItem(

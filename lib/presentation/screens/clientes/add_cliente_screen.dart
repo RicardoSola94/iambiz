@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iambiz/config/colors.dart';
+import 'package:iambiz/config/theme/default_theme.dart';
 import 'package:iambiz/domain/entities/clientes/clientes_model.dart';
 import 'package:iambiz/presentation/providers/cliente_providers/clientes_providers.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -123,138 +124,54 @@ class AddClienteScreenState extends ConsumerState<AddClienteScreen> {
     final clientesAsync = ref.watch(clientesProvider);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Cliente',
+          style: IAmBizTheme.h1TextStyle.copyWith(), // o el color que necesites
+        ),
+        leading: IconButton(
+          onPressed: () {
+            context.go('/clientes');
+          },
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 26),
+        ),
+      ),
       body: Stack(
         children: [
           SingleChildScrollView(
             child: Column(
               children: [
-                Stack(
-                  children: [
-                    Positioned(
-                      top: -330,
-                      right: -330,
-                      child: Container(
-                        height: 600,
-                        width: 600,
-                        decoration: BoxDecoration(
-                          color: AppColors.lightprimaryColor,
-                          shape: BoxShape.circle,
-                        ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 22, vertical: 15),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 20),
+                      CustomTextfield(
+                        label: "Nombre del cliente",
+                        hint: "Nombre",
+                        controller: nombreController,
+                        errorText: nombreError,
                       ),
-                    ),
-                    Positioned(
-                      top: -((1 / 4) * 500),
-                      right: -((1 / 4) * 500),
-                      child: Container(
-                        height: 450,
-                        width: 450,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.lightprimaryColor,
-                            width: 2,
-                          ),
-                        ),
+                      SizedBox(height: 20),
+                      CustomTextfield(
+                        label: "Teléfono",
+                        hint: "xxx xxxxxxx",
+                        keyboardType: TextInputType.phone,
+                        controller: telefonoController,
+                        errorText: telefonoError,
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 22,
-                        vertical: 15,
+                      SizedBox(height: 20),
+                      CustomTextfield(
+                        label: "Email",
+                        hint: "email@gmail.com",
+                        keyboardType: TextInputType.emailAddress,
+                        controller: correoController,
+                        errorText: correoError,
                       ),
-                      child: Column(
-                        children: [
-                          SizedBox(width: double.infinity, height: 60),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0,
-                              // vertical: 12.0,
-                            ),
-                            child: SizedBox(
-                              height: 50,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  // Texto centrado en pantalla
-                                  const Center(
-                                    child: Text(
-                                      "Cliente",
-                                      style: TextStyle(
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    ),
-                                  ),
-
-                                  // Flecha atrás en la esquina izquierda
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: GestureDetector(
-                                      onTap: () => context.go('/clientes'),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(
-                                                0.15,
-                                              ), // Sombra suave
-                                              blurRadius: 6,
-                                              offset: const Offset(0, 3),
-                                            ),
-                                          ],
-                                        ),
-                                        padding: const EdgeInsets.all(8),
-                                        child: const Icon(
-                                          Icons.arrow_back_ios_new_rounded,
-                                          size: 26,
-                                          color: AppColors.primaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(height: 160),
-                          CustomTextfield(
-                            label: "Nombre del cliente",
-                            hint: "Nombre",
-                            controller: nombreController,
-                            errorText: nombreError,
-                          ),
-                          SizedBox(height: 20),
-                          CustomTextfield(
-                            label: "Teléfono",
-                            hint: "xxx xxxxxxx",
-                            keyboardType: TextInputType.phone,
-                            controller: telefonoController,
-                            errorText: telefonoError,
-                          ),
-                          SizedBox(height: 20),
-                          CustomTextfield(
-                            label: "Email",
-                            hint: "email@gmail.com",
-                            keyboardType: TextInputType.emailAddress,
-                            controller: correoController,
-                            errorText: correoError,
-                          ),
-
-                          SizedBox(height: 50),
-                          CustomButton(
-                            text: 'Guardar',
-                            icon: FontAwesomeIcons.floppyDisk,
-                            isLarge: true,
-                            onPressed: _register,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -270,6 +187,15 @@ class AddClienteScreenState extends ConsumerState<AddClienteScreen> {
               ),
             ),
         ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: CustomButton(
+          text: 'Guardar',
+          icon: FontAwesomeIcons.floppyDisk,
+          isLarge: true,
+          onPressed: _register,
+        ),
       ),
     );
   }

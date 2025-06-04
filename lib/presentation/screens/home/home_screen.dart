@@ -6,7 +6,9 @@ import 'package:iambiz/config/colors.dart';
 import 'package:iambiz/config/config.dart';
 import 'package:iambiz/presentation/providers/business_stats_providers/business_stats_providers.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timelines_plus/timelines_plus.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 import '../../providers/quotations/quotations_providers.dart';
 import 'home_loading_shimmer.dart';
@@ -20,6 +22,108 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   DateTime selectedDate = DateTime.now();
+
+  final GlobalKey fabKey = GlobalKey();
+  final GlobalKey resumenKey = GlobalKey();
+  final GlobalKey calendarIconKey = GlobalKey();
+
+  List<TargetFocus> targets = [];
+
+  @override
+  void initState() {
+    super.initState();
+    initTargets();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final seen = await hasShownTutorial();
+      if (!seen) {
+        showTutorial();
+        await markTutorialAsShown();
+      }
+    });
+  }
+
+  void showTutorial() {
+    if (!mounted) return;
+
+    if (targets.any((t) => t.keyTarget?.currentContext == null)) {
+      Future.delayed(const Duration(milliseconds: 300), showTutorial);
+      return;
+    }
+
+    TutorialCoachMark(
+      targets: targets,
+      colorShadow: Colors.black,
+      textSkip: "SALTAR",
+      paddingFocus: 10,
+      onFinish: () {
+        print("Tutorial terminado");
+      },
+      onClickTarget: (target) {
+        print('Pulsado ${target.identify}');
+      },
+    ).show(context: context);
+  }
+
+  void initTargets() {
+    targets = [
+      TargetFocus(
+        identify: "AddButton",
+        keyTarget: fabKey,
+        shape: ShapeLightFocus.Circle,
+        radius: 10,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            child: const Text(
+              "Toca aquí para agregar una nueva cotización.",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ),
+        ],
+      ),
+      TargetFocus(
+        identify: "Resumen",
+        keyTarget: resumenKey,
+        radius: 10,
+        shape: ShapeLightFocus.RRect,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            child: const Text(
+              "Este es tu resumen financiero del mes.",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ),
+        ],
+      ),
+      TargetFocus(
+        identify: "Calendar",
+        keyTarget: calendarIconKey,
+        radius: 10,
+        shape: ShapeLightFocus.RRect,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            child: const Text(
+              "Presiona aquí para ver tu calendario completo.",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  Future<bool> hasShownTutorial() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('home_tutorial_shown') ?? false;
+  }
+
+  Future<void> markTutorialAsShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('home_tutorial_shown', true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +179,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'IAmBiz',
+          style: IAmBizTheme.h1TextStyle.copyWith(), // o el color que necesites
+        ),
+        leading: IconButton(
+          onPressed: () {
+            //context.go('/quote-cliente');
+          },
+          icon: Icon(CupertinoIcons.settings, size: 30),
+        ),
+        actions: [
+          IconButton(
+            key: calendarIconKey,
+            onPressed: () {
+              context.go('/calendar-task');
+            },
+            icon: Icon(CupertinoIcons.calendar_today, size: 30),
+          ),
+        ],
+      ),
+
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 89),
         child: FloatingActionButton.extended(
+          key: fabKey,
           label: const Text('Cotizar', style: TextStyle(color: Colors.white)),
           icon: const Icon(CupertinoIcons.doc_text, color: Colors.white),
           backgroundColor: AppColors.primaryColor,
@@ -96,28 +225,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            //context.go('/quote-cliente');
-                          },
-                          icon: Icon(CupertinoIcons.settings, size: 30),
-                        ),
-                        Center(
-                          child: Text('IAmBiz', style: IAmBizTheme.h1TextStyle),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            context.go('/calendar-task');
-                          },
-                          icon: Icon(CupertinoIcons.calendar_today, size: 30),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
                     Text('¡Bienvenido!', style: IAmBizTheme.h1TextStyle),
                     const SizedBox(height: 8),
                     Text(
@@ -129,6 +236,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       stats.ingresos,
                       stats.gastos,
                       stats.ganancia,
+                      key: resumenKey,
                     ),
 
                     const SizedBox(height: 24),
@@ -329,8 +437,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-Widget buildResumenFinanciero(double ingresos, double gastos, double ganancia) {
+Widget buildResumenFinanciero(
+  double ingresos,
+  double gastos,
+  double ganancia, {
+  Key? key,
+}) {
   return Container(
+    key: key,
     decoration: BoxDecoration(
       color: AppColors.primaryColor,
       // gradient: LinearGradient(

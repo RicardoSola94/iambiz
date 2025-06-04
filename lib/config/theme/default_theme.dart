@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 class IAmBizTheme {
   static var h1TextStyle = const TextStyle(
     color: Colors.black,
-    fontSize: 34,
+    fontSize: 28,
     fontFamily: 'SF-UI-DISPLAY',
   );
 
   static var h2TextStyle = const TextStyle(
     color: Colors.black,
-    fontSize: 26,
+    fontSize: 20,
     fontFamily: 'SF-UI-DISPLAY',
     fontWeight: FontWeight.w500,
   );
 
   static var h3TextStyle = const TextStyle(
     color: Colors.black,
-    fontSize: 22,
+    fontSize: 18,
     fontFamily: 'SF-UI-DISPLAY',
   );
 

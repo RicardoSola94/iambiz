@@ -8,7 +8,7 @@ import '../../../domain/entities/monthly_stats/monthly_stats_model.dart'
 final businessStatsProvider = FutureProvider<BusinessStats>((ref) async {
   // Simula datos reales (reemplaza con Firestore luego)
 
-  await Future.delayed(const Duration(seconds: 2));
+  await Future.delayed(const Duration(seconds: 1));
   return BusinessStats(
     ingresos: 5000,
     gastos: 2000,

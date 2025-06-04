@@ -84,8 +84,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   ), // antes: 16
 
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 12,
+                    horizontal: 10,
+                    vertical: 8,
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -108,24 +108,24 @@ class _BottomNavigationState extends State<BottomNavigation> {
                         selected: widget.navigationShell.currentIndex == 0,
                         onTap: () => _onItemTapped(0),
                       ),
-                      const SizedBox(width: 15),
+                      const SizedBox(width: 12),
                       _NavItem(
                         icon: CupertinoIcons.person,
                         label: 'Clientes',
                         selected: widget.navigationShell.currentIndex == 1,
                         onTap: () => _onItemTapped(1),
                       ),
-                      const SizedBox(width: 15),
+                      const SizedBox(width: 12),
                       _NavItem(
                         icon: CupertinoIcons.archivebox,
                         label: 'Inventario',
                         selected: widget.navigationShell.currentIndex == 2,
                         onTap: () => _onItemTapped(2),
                       ),
-                      const SizedBox(width: 15),
+                      const SizedBox(width: 12),
                       _NavItem(
                         icon: CupertinoIcons.graph_circle,
-                        label: 'Estadisticas',
+                        label: 'Estadísticas',
                         selected: widget.navigationShell.currentIndex == 3,
                         onTap: () => _onItemTapped(3),
                       ),

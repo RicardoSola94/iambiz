@@ -30,19 +30,28 @@ class _QuoteSelectProductsScreenState
     final productosAsync = ref.watch(inventoryProvider);
 
     return Scaffold(
-      body: Stack(
-        children: [
-          _buildBackground(),
-
-          SafeArea(
-            child: productosAsync.when(
-              loading: () => ClienteSelectShimmer(),
-              error: (e, _) => Center(child: Text("Error: $e")),
-              data: (productos) => _buildMainContent(context, productos),
-            ),
-          ),
-        ],
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Cotización',
+          style: IAmBizTheme.h1TextStyle.copyWith(), // o el color que necesites
+        ),
+        leading: IconButton(
+          onPressed: () {
+            context.go('/home');
+          },
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 26),
+        ),
       ),
+      body: SafeArea(
+        child: productosAsync.when(
+          loading: () => ClienteSelectShimmer(),
+          error: (e, _) => Center(child: Text("Error: $e")),
+          data: (productos) => _buildMainContent(context, productos),
+        ),
+      ),
+
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 70),
         child: FloatingActionButton.extended(
@@ -149,37 +158,6 @@ class _QuoteSelectProductsScreenState
     );
   }
 
-  Widget _buildBackground() {
-    return Stack(
-      children: [
-        Positioned(
-          top: -330,
-          right: -330,
-          child: Container(
-            height: 600,
-            width: 600,
-            decoration: BoxDecoration(
-              color: AppColors.lightprimaryColor,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
-        Positioned(
-          top: -125,
-          right: -125,
-          child: Container(
-            height: 450,
-            width: 450,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.lightprimaryColor, width: 2),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildMainContent(
     BuildContext context,
     List<InventoryModel> clientes,
@@ -192,54 +170,7 @@ class _QuoteSelectProductsScreenState
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10.0,
-              // vertical: 12.0,
-            ),
-            child: SizedBox(
-              height: 50,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Texto centrado en pantalla
-                  Center(
-                    child: Text("Cotización", style: IAmBizTheme.h1TextStyle),
-                  ),
-
-                  // Flecha atrás en la esquina izquierda
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () => context.go('/home'),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(
-                                0.15,
-                              ), // Sombra suave
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(8),
-                        child: const Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          size: 26,
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           Text('Seleccionar Productos', style: IAmBizTheme.h2TextStyle),
           const SizedBox(height: 16),
 
@@ -275,33 +206,34 @@ class _QuoteSelectProductsScreenState
           ),
 
           ElevatedButton.icon(
-            onPressed: () {
-              final productosInventario =
-                  ref
-                      .read(inventoryProvider)
-                      .value
-                      ?.where((p) => selectedProducts.containsKey(p.id))
-                      .toList() ??
-                  [];
+            onPressed:
+                selectedProducts.isEmpty
+                    ? null // desactiva el botón si no hay productos seleccionados
+                    : () {
+                      final productosInventario =
+                          ref
+                              .read(inventoryProvider)
+                              .value
+                              ?.where((p) => selectedProducts.containsKey(p.id))
+                              .toList() ??
+                          [];
 
-              final productosCotizados =
-                  productosInventario
-                      .map(
-                        (producto) => ProductoCotizado.fromProducto(
-                          producto,
-                          selectedProducts[producto.id] ??
-                              1, // cantidad específica
-                        ),
-                      )
-                      .toList();
+                      final productosCotizados =
+                          productosInventario
+                              .map(
+                                (producto) => ProductoCotizado.fromProducto(
+                                  producto,
+                                  selectedProducts[producto.id] ?? 1,
+                                ),
+                              )
+                              .toList();
 
-              ref
-                  .read(quotationDraftProvider.notifier)
-                  .addItems(productosCotizados);
+                      ref
+                          .read(quotationDraftProvider.notifier)
+                          .addItems(productosCotizados);
 
-              context.push('/quote-service');
-            },
-
+                      context.push('/quote-service');
+                    },
             label: const Text(
               "Siguiente",
               style: TextStyle(color: Colors.white),

@@ -8,6 +8,7 @@ import 'package:iambiz/config/colors.dart';
 import 'package:iambiz/domain/entities/inventory/inventory_model.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+import '../../../config/config.dart';
 import '../../providers/inventory/inventory_providers.dart';
 import '../screen.dart';
 import '../widgets/custom_dropdown.dart';
@@ -145,219 +146,137 @@ class AddInventoryScreenState extends ConsumerState<AddInventoryScreen> {
     ];
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Inventario',
+          style: IAmBizTheme.h1TextStyle.copyWith(), // o el color que necesites
+        ),
+        leading: IconButton(
+          onPressed: () {
+            context.go('/inventory');
+          },
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 26),
+        ),
+      ),
       body: Stack(
         children: [
           SingleChildScrollView(
             child: Column(
               children: [
-                Stack(
-                  children: [
-                    Positioned(
-                      top: -330,
-                      right: -330,
-                      child: Container(
-                        height: 600,
-                        width: 600,
-                        decoration: BoxDecoration(
-                          color: AppColors.lightprimaryColor,
-                          shape: BoxShape.circle,
-                        ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 22,
+                    vertical: 15,
+                  ),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      CustomTextfield(
+                        label: "Nombre del producto",
+                        hint: "Nombre",
+                        controller: nameController,
+                        errorText: nameError,
                       ),
-                    ),
-                    Positioned(
-                      top: -((1 / 4) * 500),
-                      right: -((1 / 4) * 500),
-                      child: Container(
-                        height: 450,
-                        width: 450,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.lightprimaryColor,
-                            width: 2,
-                          ),
-                        ),
+                      const SizedBox(height: 20),
+                      CustomDropdownField(
+                        label: "Categoría",
+                        hint: "Ej: Herramienta, Accesorio, etc",
+                        value: selectedCategoria,
+                        items: categoriasInventario,
+                        onChanged:
+                            (val) => setState(() => selectedCategoria = val),
+                        errorText: categoriaError,
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 22,
-                        vertical: 15,
+
+                      const SizedBox(height: 20),
+                      CustomDropdownField(
+                        label: "Unidad de medida",
+                        hint: "Ej: Kg",
+                        value: selectedUnit,
+                        items: [
+                          'Unidad',
+                          'Kg',
+                          'Litro',
+                          'Metro',
+                          'Caja',
+                          'Pieza',
+                        ],
+                        onChanged: (val) => setState(() => selectedUnit = val),
+                        errorText: unitError,
                       ),
-                      child: Column(
+
+                      const SizedBox(height: 20),
+                      CustomTextfield(
+                        label: "Cantidad",
+                        hint: "Ej: 10",
+                        keyboardType: TextInputType.number,
+                        controller: quantityController,
+                        //keyboardType: TextInputType.number,
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const SizedBox(height: 40),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0,
-                              // vertical: 12.0,
-                            ),
-                            child: SizedBox(
-                              height: 50,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  // Texto centrado en pantalla
-                                  const Center(
-                                    child: Text(
-                                      "Inventario",
-                                      style: TextStyle(
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    ),
-                                  ),
-
-                                  // Flecha atrás en la esquina izquierda
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: GestureDetector(
-                                      onTap: () => context.go('/inventory'),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(
-                                                0.15,
-                                              ), // Sombra suave
-                                              blurRadius: 6,
-                                              offset: const Offset(0, 3),
-                                            ),
-                                          ],
-                                        ),
-                                        padding: const EdgeInsets.all(8),
-                                        child: const Icon(
-                                          Icons.arrow_back_ios_new_rounded,
-                                          size: 26,
-                                          color: AppColors.primaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                          Expanded(
+                            child: CustomTextfield(
+                              //hint: "Cantidad mínima",
+                              label: "Cantidad mínima",
+                              hint: "Ej: 3",
+                              keyboardType: TextInputType.number,
+                              controller: minQuantityController,
+                              //keyboardType: TextInputType.number,
                             ),
                           ),
-                          const SizedBox(height: 140),
-                          CustomTextfield(
-                            label: "Nombre del producto",
-                            hint: "Nombre",
-                            controller: nameController,
-                            errorText: nameError,
-                          ),
-                          const SizedBox(height: 20),
-                          CustomDropdownField(
-                            label: "Categoría",
-                            hint: "Ej: Herramienta, Accesorio, etc",
-                            value: selectedCategoria,
-                            items: categoriasInventario,
-                            onChanged:
-                                (val) =>
-                                    setState(() => selectedCategoria = val),
-                            errorText: categoriaError,
-                          ),
-
-                          const SizedBox(height: 20),
-                          CustomDropdownField(
-                            label: "Unidad de medida",
-                            hint: "Ej: Kg",
-                            value: selectedUnit,
-                            items: [
-                              'Unidad',
-                              'Kg',
-                              'Litro',
-                              'Metro',
-                              'Caja',
-                              'Pieza',
-                            ],
-                            onChanged:
-                                (val) => setState(() => selectedUnit = val),
-                            errorText: unitError,
-                          ),
-
-                          const SizedBox(height: 20),
-                          CustomTextfield(
-                            label: "Cantidad",
-                            hint: "Ej: 10",
-                            keyboardType: TextInputType.number,
-                            controller: quantityController,
-                            //keyboardType: TextInputType.number,
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: CustomTextfield(
-                                  //hint: "Cantidad mínima",
-                                  label: "Cantidad mínima",
-                                  hint: "Ej: 3",
-                                  keyboardType: TextInputType.number,
-                                  controller: minQuantityController,
-                                  //keyboardType: TextInputType.number,
-                                ),
-                              ),
-                              SizedBox(width: 8),
-                              Tooltip(
-                                message:
-                                    "Es la cantidad mínima de este ítem en tu inventario antes de que se considere bajo.",
-                                decoration: BoxDecoration(
-                                  color: Colors.black87,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                textStyle: TextStyle(color: Colors.white),
-                                child: Icon(
-                                  CupertinoIcons.info_circle,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 20),
-                          CustomTextfield(
-                            label: "Precio de compra",
-                            hint: "Ej: 20.00",
-                            keyboardType: TextInputType.numberWithOptions(
-                              decimal: true,
+                          SizedBox(width: 8),
+                          Tooltip(
+                            message:
+                                "Es la cantidad mínima de este ítem en tu inventario antes de que se considere bajo.",
+                            decoration: BoxDecoration(
+                              color: Colors.black87,
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                RegExp(r'^\d+\.?\d{0,2}'),
-                              ),
-                            ],
-                            controller: purchasePriceController,
-                            //  keyboardType: TextInputType.number,
-                          ),
-                          const SizedBox(height: 20),
-                          CustomTextfield(
-                            label: "Precio de venta (opcional)",
-                            hint: "Ej: 20.00",
-                            keyboardType: TextInputType.numberWithOptions(
-                              decimal: true,
+                            textStyle: TextStyle(color: Colors.white),
+                            child: Icon(
+                              CupertinoIcons.info_circle,
+                              color: Colors.grey[600],
                             ),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                RegExp(r'^\d+\.?\d{0,2}'),
-                              ),
-                            ],
-                            controller: salePriceController,
-                          ),
-
-                          const SizedBox(height: 50),
-                          CustomButton(
-                            text: 'Guardar',
-                            icon: FontAwesomeIcons.floppyDisk,
-                            isLarge: true,
-                            onPressed: _save,
                           ),
                         ],
                       ),
-                    ),
-                  ],
+
+                      const SizedBox(height: 20),
+                      CustomTextfield(
+                        label: "Precio de compra",
+                        hint: "Ej: 20.00",
+                        keyboardType: TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d+\.?\d{0,2}'),
+                          ),
+                        ],
+                        controller: purchasePriceController,
+                        //  keyboardType: TextInputType.number,
+                      ),
+                      const SizedBox(height: 20),
+                      CustomTextfield(
+                        label: "Precio de venta (opcional)",
+                        hint: "Ej: 20.00",
+                        keyboardType: TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d+\.?\d{0,2}'),
+                          ),
+                        ],
+                        controller: salePriceController,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -373,6 +292,15 @@ class AddInventoryScreenState extends ConsumerState<AddInventoryScreen> {
               ),
             ),
         ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(30),
+        child: CustomButton(
+          text: 'Guardar',
+          icon: FontAwesomeIcons.floppyDisk,
+          isLarge: true,
+          onPressed: _save,
+        ),
       ),
     );
   }
